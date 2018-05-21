@@ -56,6 +56,20 @@ export const createSurvey = ({ user, body }, res) => {
     });
 };
 
+export const updateSurvey = ({ user, body }, res) => {
+  console.log('Updating survey:', body);
+  return Survey.update({ _id: body.survey._id, owner: user._id }, { $set: body.survey })
+    .then((response) => {
+      console.error('updateSurvey result ', response);
+      return res.status(200).json(response);
+    })
+    .catch((error) => {
+      console.error('updateSurvey error ', error);
+      return res.status(400).json(error);
+    });
+};
+
+
 export const deleteSurvey = ({ user, params: { surveyId } }, res) => {
   console.log('Deleting survey:', surveyId);
   return Survey.deleteOne({ _id: surveyId, owner: user._id })
