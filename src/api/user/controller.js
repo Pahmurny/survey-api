@@ -1,5 +1,5 @@
 import { success, notFound } from '../../services/response/';
-import { User } from '.';
+import User from './model';
 import { sign } from '../../services/jwt';
 
 export const index = ({ querymen: { query, select, cursor } }, res, next) =>
@@ -28,7 +28,7 @@ export const create = ({ bodymen: { body } }, res, next) =>
   User.create(body)
     .then((user) => {
       sign(user.id)
-        .then(token => ({ token, user: user.view(true) }))
+        .then(token => ({ token: token, user: user.view(true) }))
         .then(success(res, 201));
     })
     .catch((err) => {

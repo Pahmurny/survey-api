@@ -1,12 +1,16 @@
 /* global beforeEach describe it expect */
 
 import crypto from 'crypto';
-import { User } from '.';
+import User from './model';
 
 let user;
 
 beforeEach(async () => {
-  user = await User.create({ name: 'user', email: 'a@a.com', password: '123456' });
+  try {
+    user = await User.create({ name: 'user', email: 'a@a.com', password: '123456' });
+  } catch (error) {
+    console.log('Error on user creation', error);
+  }
 });
 
 describe('set email', () => {

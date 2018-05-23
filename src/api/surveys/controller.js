@@ -1,22 +1,30 @@
 import Survey from './model';
+import SurveyPage from '../pages/model';
 
 export const getSurveyById = ({ user, params: { surveyId } }, res) => {
   console.log('Getting by id:', surveyId);
+  const surveyWithData = {};
   return Survey.findOne({ _id: surveyId })
-    .then((response) => {
-      console.log('getSurveyById response ', response);
-      console.log('? ', typeof response.owner, ' -- ', typeof user._id);
-      if (user._id.equals(response.owner)) {
+    .then((surveyResponse) => {
+      surveyWithData.survey = surveyResponse;
+      console.log('getSurveyById response ', surveyResponse);
+      return SurveyPage.find({ owner: user._id, survey: surveyResponse._id })
+        .sort('+order');
+    })
+    .then((pagesResponse) => {
+      surveyWithData.pages = pagesResponse;
+      if (user._id.equals(surveyWithData.survey.owner)) {
         console.log('getSurveyById reqested by owner');
-        return res.status(200).json(response);
+        return res.status(200).json(surveyWithData);
       }
-      if (response.published === true) {
+      if (surveyWithData.survey.published === true) {
         console.log('getSurveyById reqested published');
-        return res.status(200).json(response);
+        return res.status(200).json(surveyWithData);
       }
       console.log('getSurveyById reqested unpublished');
       return res.status(200).json({});
     })
+
     .catch((error) => {
       console.error('getSurveyById error ', error);
       res.status(400).json(error);

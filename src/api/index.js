@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import user from './user';
-import auth from './auth';
-import surveys from './surveys';
+import userRoutes from './user';
+import authRoutes from './auth';
+import surveysRoutes from './surveys';
+import pagesRoutes from './pages';
 
 const router = new Router();
 
@@ -28,8 +29,9 @@ const router = new Router();
  * @apiParam {String[]} [sort=-createdAt] Order of returned items.
  * @apiParam {String[]} [fields] Fields to be returned.
  */
-router.use('/users', user);
-router.use('/auth', auth);
-router.use('/surveys', surveys);
+router.use('/users', userRoutes);
+router.use('/auth', authRoutes);
+router.use('/surveys', surveysRoutes);
+router.use('/pages', pagesRoutes);
 
 export default router;
