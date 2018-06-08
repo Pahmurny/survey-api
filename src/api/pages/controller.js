@@ -5,7 +5,6 @@ export const getSurveyPages = ({ user, params: { survey } }, res) => {
   return SurveyPage.find({ owner: user._id, survey: survey._id })
     .sort(sort)
     .then((response) => {
-      console.log('getMySurveys response ', response);
       return res.status(200).json(response);
     })
     .catch((error) => {
@@ -14,8 +13,7 @@ export const getSurveyPages = ({ user, params: { survey } }, res) => {
     });
 };
 
-export const createSurveyPage = ({ user, body }, res) => {
-  console.log('Creating survey page:', body);
+export const createSurveyPage = ({ user, body }, res, next) => {
   // Security issue! We can pass other survey id
   const newSurvey = {
     title: body.surveyPage.title,
@@ -28,16 +26,15 @@ export const createSurveyPage = ({ user, body }, res) => {
       return getSurveyPages({ user: user, params: { survey: body.survey } }, res);
     })
     .catch((error) => {
-      console.error('createSurvey error ', error);
-      return res.status(400).json(error);
+      console.error('createSurvey error ');
+      // return res.status(400).json(error);
+      next(error);
     });
 };
 
 export const updateSurveyPage = ({ user, body }, res) => {
-  console.log('Updating survey page:', body);
   return SurveyPage.update({ _id: body.page._id, owner: user._id }, { $set: body.page })
     .then((response) => {
-      console.error('updateSurveyPage result ', response);
       return getSurveyPages({ user: user, params: { survey: { _id: body.page.survey } } }, res);
       // return res.status(200).json(response);
     })
@@ -49,16 +46,13 @@ export const updateSurveyPage = ({ user, body }, res) => {
 
 
 export const deleteSurveyPage = ({ user, params: { pageId } }, res) => {
-  console.log('Deleting survey page:', pageId);
   let surveyId;
   return SurveyPage.findOne({ _id: pageId, owner: user._id })
     .then((response) => {
-      console.log('Survey page to delete', response);
       surveyId = response.survey;
       return SurveyPage.deleteOne({ _id: pageId, owner: user._id });
     })
     .then((response) => {
-      console.log('Survey page deleted', response);
       return getSurveyPages({ user: user, params: { survey: { _id: surveyId } } }, res);
     })
     .catch((error) => {
